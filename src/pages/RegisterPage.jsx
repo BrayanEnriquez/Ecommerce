@@ -1,34 +1,9 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Button from '../components/atoms/Button';
 import { useState } from 'react';
 
 const RegisterPage = () => {
-
-  const [user, setUser] = useState("")
-  const [password, setPassword] = useState("")
-  const navigate = useNavigate()
-
-  const auth = async (user, password) => {
-    try {
-      const authFirebase = getAuth()
-      await signInWithEmailAndPassword(authFirebase, user, password)
-
-      alert("Autenticado")
-      navigate("/")
-    } catch (error) {
-      alert("Credenciales incorrectas")
-    }
-
-  }
-
-  const onSubmit = (event) => {
-    event.preventDefault()
-
-    auth(user, password)
-  }
-
-
   return (
     <div className="min-h-screen bg-[#fbf8ff] font-['Inter'] flex flex-col items-center px-4 py-8">
       {/* Header / Logo Area */}

@@ -1,6 +1,5 @@
-import { FirebaseApp } from "./firebase";
+import { firebaseApp } from "./firebase";
 import { getFirestore } from "firebase/firestore"
 
-
-export const fireStoreDb = getFirestore(FirebaseApp)
+export const fireStoreDb = getFirestore(firebaseApp)
 

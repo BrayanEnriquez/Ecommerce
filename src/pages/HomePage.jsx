@@ -1,36 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from "react"
 import Navbar from '../components/atoms/Navbar';
 import BottomNav from '../components/atoms/BottomNav';
 import HeroSection from '../components/atoms/HeroSection';
 import CategoryItem from '../components/atoms/CategoryItem';
 import ProductCard from '../components/atoms/ProductCard';
 import Button from '../components/atoms/Button';
+import AddToCartModal from '../components/atoms/AddToCartModal';
+import { fireStoreDb } from "../back/firestore.js"
+import { getDocs, collection } from "firebase/firestore"
+import { logout } from "../back/auth.js"
+import { useNavigate } from "react-router-dom"
 
 const HomePage = () => {
+  const navigate = useNavigate()
+
+  const [productos, setProductos] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const categories = [
-    { icon: 'devices', label: 'Electronics' },
-    { icon: 'checkroom', label: 'Clothing' },
-    { icon: 'chair', label: 'Home' },
-    { icon: 'fitness_center', label: 'Sports' },
-    { icon: 'watch', label: 'Accessories' }
+    { icon: 'apps', label: 'All' },
+    { icon: 'computer', label: 'PC' },
+    { icon: 'chair', label: 'Hogar' },
+    { icon: 'category', label: 'Otros' }
   ];
 
-  const products = [
-    {
-      title: 'Lumina Chrono Series',
-      price: '249.00',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDq6Ufe16g29lJLoBaJxCnTEKt2Rw9xHN4Un0dJRJR2eDKAWmU2cVV971-KcaBKKkAYyRb_NPbO_QtPaebuXum-8Knt7m-GieHwtjnEH9NnVJKfcawl2sp98d7hiktwKnIR-AHrgMV7Vk3ATE6U0zr02Bk3n8MvISZev-sPg6AzrhSqKJR2BSgCxtif0PhCwP5tZzcQglcgKEzJR8mjPlXFcprUbIxpo2uSMj_LKsXuuegD2e0YCXftxcezlCW7-eqWSPdxO2uwYZ4',
-      category: 'Electronics',
-      rating: '4.8'
-    },
-    {
-      title: 'Vortex Kinetic Runner',
-      price: '120.00',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC-tcozOud7lXM8pB33Kq4cu5PQnZOBxD3t-gpafX_jNwZBqaRDRHKl_eotvFZ-GxtmZs1Rj5EysJMu45fKNsitRifTKAx-4H2cYsuBYn7XlkeYdv397xQ8sZKAItxZAV2jXBW_w3gQmVAP9PfYTYQatD5XIwd8CdP-9QrKvLRbQL6buF9Wdub5TrgNNCazNk9K63_kX-Y1cQHLfiGOtvYeRTJCq930lU_nq9pKz7fRXjj7RPqEaY49T6ICut_GWwyTgxG8WDdA0wM',
-      category: 'Clothing',
-      rating: '4.9'
-    }
-  ];
+  const getProductos = async () => {
+    const fireStoreDocs = await getDocs(collection(fireStoreDb, "productos"));
+    setProductos([...fireStoreDocs.docs.map(doc => doc.data())])
+  }
+
+  useEffect(() => {
+    getProductos()
+  }, [])
+
+  const filteredProducts = productos.filter(producto => {
+    const matchesCategory = selectedCategory === "All" || producto.Categoria === selectedCategory;
+    const matchesSearch = producto.Nombre.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
+    setSearchQuery(searchTerm);
+  };
+
+  const resetFilters = () => {
+    setSelectedCategory("All");
+    setSearchTerm("");
+    setSearchQuery("");
+  };
+
+  const openModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const localLogout = () => {
+    logout()
+    navigate("/login")
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] font-['Inter']">
@@ -39,51 +71,72 @@ const HomePage = () => {
       <main className="pt-16 pb-24">
         <HeroSection />
 
-        {/* Login Access Point */}
-        <section className="px-4 mt-8">
-          <div className="bg-[#d3e4fe] rounded-xl p-4 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-[#0b1c30]">Welcome to Lumina</span>
-              <span className="text-sm text-[#434656]">Sign in for a personalized experience</span>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                to="/login"
-                text="Login"
-                variant="outline"
-                className="!py-2 !px-4 !w-auto"
-              />
-              <Button
-                text="Join Now"
-                variant="primary"
-                className="!py-2 !px-4 !w-auto"
+        {/* Search Bar Section */}
+        <section className="mt-8 px-4">
+          <form
+            onSubmit={handleSearch}
+            className="flex gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-100"
+          >
+            <div className="flex-1 flex items-center gap-2 px-2">
+              <span className="material-symbols-outlined text-slate-400">search</span>
+              <input
+                type="text"
+                placeholder="¿Qué estás buscando?"
+                className="w-full outline-none text-sm text-[#1a1b23] bg-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-          </div>
+            <button
+              type="submit"
+              className="bg-[#003ec7] hover:bg-[#fe6b00] text-white px-4 py-2 rounded-lg text-xs font-bold active:scale-95 transition-all duration-300 shadow-md hover:shadow-orange-500/20"
+            >
+              Buscar
+            </button>
+          </form>
         </section>
 
-        {/* Featured Categories */}
+        {/* Filter Categories */}
         <section className="mt-8">
           <div className="px-4 flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-[#0b1c30]">Featured Categories</h2>
-            <button className="text-[#003ec7] text-xs font-bold">View All</button>
+            <h2 className="text-xl font-bold text-[#0b1c30]">Filter</h2>
+            <button
+              onClick={resetFilters}
+              className="text-[#003ec7] text-xs font-bold"
+            >
+              Reset
+            </button>
           </div>
           <div className="flex gap-4 overflow-x-auto no-scrollbar px-4 py-2">
             {categories.map((cat, i) => (
-              <CategoryItem key={i} icon={cat.icon} label={cat.label} />
+              <CategoryItem
+                key={i}
+                icon={cat.icon}
+                label={cat.label}
+                isActive={selectedCategory === cat.label}
+                onClick={() => setSelectedCategory(cat.label)}
+              />
             ))}
           </div>
         </section>
 
-        {/* New Arrivals */}
+        {/* Products Grid */}
         <section className="mt-8 px-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-[#0b1c30]">New Arrivals</h2>
-            <span className="bg-[#bf3003] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">Trending</span>
+            <h2 className="text-xl font-bold text-[#0b1c30]">
+              {searchQuery ? `Resultados para "${searchQuery}"` : (selectedCategory === "All" ? "New Arrivals" : selectedCategory)}
+            </h2>
+            <span className="bg-[#bf3003] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
+              {filteredProducts.length} Items
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {products.map((product, i) => (
-              <ProductCard key={i} {...product} />
+            {filteredProducts.map((producto, i) => (
+              <ProductCard
+                key={i}
+                {...producto}
+                onAddToCart={openModal}
+              />
             ))}
           </div>
         </section>
@@ -116,6 +169,12 @@ const HomePage = () => {
           </div>
         </section>
       </main>
+
+      <AddToCartModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <BottomNav />
 

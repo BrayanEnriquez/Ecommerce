@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
 import Button from '../components/atoms/Button';
 
 const AuthPage = () => {
@@ -23,13 +24,22 @@ const AuthPage = () => {
 
   const onSubmit = (event) => {
     event.preventDefault()
-
+    if (!user || !password) {
+      alert("Por favor completa todos los campos")
+      return
+    }
     auth(user, password)
   }
 
   useEffect(() => {
-    auth()
-  }, [])
+    const authFirebase = getAuth()
+    const unsubscribe = onAuthStateChanged(authFirebase, (currentUser) => {
+      if (currentUser) {
+        navigate("/")
+      }
+    })
+    return () => unsubscribe()
+  }, [navigate])
 
   return (
     <div className="min-h-screen bg-[#fbf8ff] font-['Inter'] flex flex-col items-center px-4 py-8">
@@ -50,6 +60,7 @@ const AuthPage = () => {
             <input
               type="email"
               placeholder="tu@email.com"
+              onChange={user => setUser(user.target.value)}
               className="w-full bg-[#f3f2fe] text-[#1a1b23] px-4 py-3 rounded-md outline-none focus:bg-[#e2e1ed] border-l-0 focus:border-l-4 border-[#003ec7] transition-all"
             />
           </div>
@@ -63,6 +74,7 @@ const AuthPage = () => {
             <input
               type="password"
               placeholder="••••••••"
+              onChange={password => setPassword(password.target.value)}
               className="w-full bg-[#f3f2fe] text-[#1a1b23] px-4 py-3 rounded-md outline-none focus:bg-[#e2e1ed] border-l-0 focus:border-l-4 border-[#003ec7] transition-all"
             />
           </div>
@@ -82,6 +94,7 @@ const AuthPage = () => {
           </div>
           <span className="relative bg-white px-4 text-xs font-bold text-[#434654] uppercase tracking-widest">o continúa con</span>
         </div>
+
         {/* Registration Link */}
         <div className="text-center">
           <p className="text-[#434654] text-sm">
