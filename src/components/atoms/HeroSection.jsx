@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button';
 
 const HeroSection = () => {
   return (
@@ -12,7 +13,11 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-[#0b1c30]/80 to-transparent flex flex-col justify-center px-8">
           <h1 className="text-white text-4xl font-bold max-w-[280px] mb-4 font-['Inter']">Elevate Your Everyday Style</h1>
           <p className="text-white/90 text-base mb-8 max-w-[320px]">Experience premium curation and frictionless shopping with Lumina's newest collection.</p>
-          <button className="bg-[#a04100] text-white px-8 py-3 rounded-lg font-bold w-fit active:opacity-90 shadow-lg transition-transform hover:scale-[1.02]">Shop Now</button>
+          <Button
+            text="Shop Now"
+            variant="secondary"
+            className="!w-fit !px-8 !py-3"
+          />
         </div>
       </div>
     </section>

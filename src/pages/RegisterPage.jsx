@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/atoms/Button';
+import { useState } from 'react';
 
-const AuthPage = () => {
+const RegisterPage = () => {
 
   const [user, setUser] = useState("")
   const [password, setPassword] = useState("")
@@ -27,9 +28,6 @@ const AuthPage = () => {
     auth(user, password)
   }
 
-  useEffect(() => {
-    auth()
-  }, [])
 
   return (
     <div className="min-h-screen bg-[#fbf8ff] font-['Inter'] flex flex-col items-center px-4 py-8">
@@ -39,11 +37,21 @@ const AuthPage = () => {
         <p className="text-[#434654] text-sm uppercase tracking-[0.05em] font-medium">Precision Commerce</p>
       </div>
 
-      {/* Auth Card */}
+      {/* Register Card */}
       <div className="w-full max-w-md bg-white rounded-lg shadow-[0_20px_40px_rgba(26,27,35,0.06)] p-8">
-        <h2 className="text-[#1a1b23] text-2xl font-semibold mb-8 text-center">Bienvenido de nuevo</h2>
+        <h2 className="text-[#1a1b23] text-2xl font-semibold mb-8 text-center">Crear una cuenta</h2>
 
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form className="space-y-6">
+          {/* Name Field */}
+          <div className="space-y-1">
+            <label className="block text-xs font-bold text-[#434654] uppercase tracking-wider ml-1">Nombre Completo</label>
+            <input
+              type="text"
+              placeholder="Tu Nombre"
+              className="w-full bg-[#f3f2fe] text-[#1a1b23] px-4 py-3 rounded-md outline-none focus:bg-[#e2e1ed] border-l-0 focus:border-l-4 border-[#003ec7] transition-all"
+            />
+          </div>
+
           {/* Email Field */}
           <div className="space-y-1">
             <label className="block text-xs font-bold text-[#434654] uppercase tracking-wider ml-1">Email</label>
@@ -56,10 +64,7 @@ const AuthPage = () => {
 
           {/* Password Field */}
           <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <label className="block text-xs font-bold text-[#434654] uppercase tracking-wider ml-1">Contraseña</label>
-              <button type="button" className="text-xs text-[#003ec7] font-semibold">¿Olvidaste tu contraseña?</button>
-            </div>
+            <label className="block text-xs font-bold text-[#434654] uppercase tracking-wider ml-1">Contraseña</label>
             <input
               type="password"
               placeholder="••••••••"
@@ -67,10 +72,20 @@ const AuthPage = () => {
             />
           </div>
 
-          {/* Login Button */}
+          {/* Confirm Password Field */}
+          <div className="space-y-1">
+            <label className="block text-xs font-bold text-[#434654] uppercase tracking-wider ml-1">Confirmar Contraseña</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              className="w-full bg-[#f3f2fe] text-[#1a1b23] px-4 py-3 rounded-md outline-none focus:bg-[#e2e1ed] border-l-0 focus:border-l-4 border-[#003ec7] transition-all"
+            />
+          </div>
+
+          {/* Register Button */}
           <Button
             type="submit"
-            text="Iniciar Sesión"
+            text="Registrarse"
             variant="primary"
           />
         </form>
@@ -80,17 +95,18 @@ const AuthPage = () => {
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-[#c4c5d7]/30"></div>
           </div>
-          <span className="relative bg-white px-4 text-xs font-bold text-[#434654] uppercase tracking-widest">o continúa con</span>
+          <span className="relative bg-white px-4 text-xs font-bold text-[#434654] uppercase tracking-widest">o regístrate con</span>
         </div>
-        {/* Registration Link */}
+
+        {/* Login Link */}
         <div className="text-center">
           <p className="text-[#434654] text-sm">
-            ¿No tienes una cuenta?{' '}
+            ¿Ya tienes una cuenta?{' '}
             <Link
-              to="/register"
+              to="/login"
               className="text-[#a04100] font-bold hover:underline"
             >
-              Registrarse
+              Inicia Sesión
             </Link>
           </p>
         </div>
@@ -98,10 +114,10 @@ const AuthPage = () => {
 
       {/* Footer info */}
       <div className="mt-auto pt-8 text-[#747686] text-xs text-center max-w-xs">
-        Al continuar, aceptas nuestros <a href="#" className="underline">Términos de Servicio</a> y <a href="#" className="underline">Política de Privacidad</a>.
+        Al registrarte, aceptas nuestros <a href="#" className="underline">Términos de Servicio</a> y <a href="#" className="underline">Política de Privacidad</a>.
       </div>
     </div>
   );
 };
 
-export default AuthPage;
+export default RegisterPage;

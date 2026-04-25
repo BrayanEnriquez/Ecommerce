@@ -1,10 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '../components/atoms/Navbar';
 import BottomNav from '../components/atoms/BottomNav';
 import HeroSection from '../components/atoms/HeroSection';
 import CategoryItem from '../components/atoms/CategoryItem';
 import ProductCard from '../components/atoms/ProductCard';
+import Button from '../components/atoms/Button';
 
 const HomePage = () => {
   const categories = [
@@ -47,15 +47,17 @@ const HomePage = () => {
               <span className="text-sm text-[#434656]">Sign in for a personalized experience</span>
             </div>
             <div className="flex gap-2">
-              <Link
+              <Button
                 to="/login"
-                className="px-4 py-2 border border-[#003ec7] text-[#003ec7] text-xs font-bold rounded-lg hover:bg-[#003ec7]/5 transition-colors"
-              >
-                Login
-              </Link>
-              <button className="px-4 py-2 bg-[#003ec7] text-white text-xs font-bold rounded-lg shadow-sm">
-                Join Now
-              </button>
+                text="Login"
+                variant="outline"
+                className="!py-2 !px-4 !w-auto"
+              />
+              <Button
+                text="Join Now"
+                variant="primary"
+                className="!py-2 !px-4 !w-auto"
+              />
             </div>
           </div>
         </section>
